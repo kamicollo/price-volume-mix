@@ -4,3 +4,4 @@ __pycache__
 raw
 book/_book
 book/.quarto
+book/_site
