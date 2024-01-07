@@ -1,5 +1,9 @@
 # Introduction
 
-This is a book created from markdown and executable code.
+This is some stuff.
 
-See @knuth84 for additional discussion of literate programming.
+{{< embed notebooks/intro_to_price_volume_analysis.ipynb#data_processing >}}
+
+Where's the link??
+
+{{< embed foo.ipynb#foo >}}

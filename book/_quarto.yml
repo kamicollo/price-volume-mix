@@ -10,6 +10,7 @@ book:
     - intro.qmd
     - summary.qmd
     - references.qmd
+    
   twitter-card: true
   site-url: https://aurimas.eu
   search: true
@@ -26,6 +27,12 @@ format:
     theme: cosmo
   pdf:
     documentclass: scrreprt
+
+notebook-links: true
+notebook-view:
+  - notebook: notebooks/intro_to_price_volume_analysis.ipynb
+    title: "Plots and Computations"
+    url: https://colab.research.google.com/drive/12GsIPQ644SI4vkEEHiZn-Qqfbr-bD1__
 
 
 

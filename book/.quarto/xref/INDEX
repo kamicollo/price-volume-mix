@@ -10,5 +10,8 @@
   },
   "references.qmd": {
     "references.html": "01c0ec19"
+  },
+  "notebooks/intro_to_price_volume_analysis.ipynb": {
+    "intro_to_price_volume_analysis.html": "45815d4d"
   }
 }
