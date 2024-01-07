@@ -1,0 +1,31 @@
+project:
+  type: book
+
+book:
+  title: "Price volume mix analysis with Python"
+  author: "Aurimas Racas"
+  date: "2024"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+  twitter-card: true
+  site-url: https://aurimas.eu
+  search: true
+  repo-url: https://github.com/kamicollo/price-volume-mix
+  repo-actions: [edit]
+  downloads: [pdf, epub]
+  sharing: [twitter, facebook]
+  cover-image: cover.png
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+
+
