@@ -5,3 +5,8 @@ raw
 book/_book
 book/.quarto
 book/_site
+# pixi environments
+.pixi
+.ruff_cache
+.mypy_cache
+
