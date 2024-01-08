@@ -10,7 +10,8 @@ metadata-files:
 
 format:
   html:
-    theme: cosmo
+    theme: zephyr
+    linestretch: 1.7
 
 notebook-links: true
 notebook-view:

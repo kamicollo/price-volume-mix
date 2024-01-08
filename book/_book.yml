@@ -4,20 +4,38 @@ book:
   date: "1/7/2024"
   chapters:
     - index.qmd
-    - part: "BASICS"
+    - part: "Price volume basics"
       chapters:
-        - index.qmd
-        - intro.qmd
-        - summary.qmd
-        - references.qmd
-        - foo.ipynb
-        - notebooks/intro_to_price_volume_analysis.ipynb
+        - part1/what_is_pvm_and_how_to_use_it.qmd
+        - part1/intro_to_package.qmd
+        - part1/understanding_mix_effects.qmd
+        - part1/selecting_granularity.qmd
+        - part1/handling_new_discontinued_units.qmd
+        - part1/end_to_end_example.qmd
+    - part: "Diving deeper"
+      chapters:
+        - part2/alternative_formulas.qmd
+        - part2/reconciliations.qmd
+        - part2/extending_to_profitability.qmd
+        - part2/extending_to_fx.qmd
+        - part2/pvm_everywhere.qmd
+    - part: "Real-world considerations"
+      chapters:
+        - part3/data_granularity.qmd
+        - part3/rebates_and_indirect_items.qmd
+        - part3/high_sku_velocity.qmd        
+        - part3/margin_vs_unit_profit.qmd
+        - part3/subscription_businesses.qmd        
+    - references.qmd
+    - datasets.qmd
+    - summary.qmd
+  appendices:
+    - notebooks/intro_to_price_volume_analysis.ipynb    
     
   twitter-card: true
   site-url: https://aurimas.eu
   search: true
-  repo-url: https://github.com/kamicollo/price-volume-mix
-  repo-actions: [edit]
+  repo-url: https://github.com/kamicollo/price-volume-mix  
   downloads: [pdf, epub]
   sharing: [twitter, facebook]
   cover-image: cover.png

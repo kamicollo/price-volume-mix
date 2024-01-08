@@ -1,9 +1,0 @@
-# Introduction {#sec-introduction}
-
-This is some stuff.
-
-{{< embed notebooks/intro_to_price_volume_analysis.ipynb#data_processing >}}
-
-Where's the link??
-
-{{< embed foo.ipynb#foo >}}

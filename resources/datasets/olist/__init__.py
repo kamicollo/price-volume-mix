@@ -3,14 +3,14 @@ import pathlib
 
 root_path = pathlib.Path(__file__).parent
 
-sellers = pl.scan_parquet(root_path.joinpath("olist_sellers_dataset.csv"))
-customers = pl.scan_parquet(root_path.joinpath("olist_customers_dataset.csv"))
-geolocation = pl.scan_parquet(root_path.joinpath("olist_geolocation_dataset.csv"))
-order_items = pl.scan_parquet(root_path.joinpath("olist_order_items_dataset.csv"))
-orders = pl.scan_parquet(root_path.joinpath("olist_orders_dataset.csv"))
-products = pl.scan_parquet(root_path.joinpath("olist_products_dataset.csv"))
+sellers = pl.scan_parquet(root_path.joinpath("olist_sellers_dataset.parquet"))
+customers = pl.scan_parquet(root_path.joinpath("olist_customers_dataset.parquet"))
+geolocation = pl.scan_parquet(root_path.joinpath("olist_geolocation_dataset.parquet"))
+order_items = pl.scan_parquet(root_path.joinpath("olist_order_items_dataset.parquet"))
+orders = pl.scan_parquet(root_path.joinpath("olist_orders_dataset.parquet"))
+products = pl.scan_parquet(root_path.joinpath("olist_products_dataset.parquet"))
 product_categories = pl.scan_parquet(
-    root_path.joinpath("product_category_name_translation.csv")
+    root_path.joinpath("product_category_name_translation.parquet")
 )
 
 sales_data = (

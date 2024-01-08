@@ -1,7 +1,30 @@
 # Preface {.unnumbered}
 
-This is a Quarto book.
+### What is price-volume analysis? {.unnumbered}
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+Price-volume (PVM) analysis is a widely applicable financial analysis technique for analyzing trends in KPIs over multiple periods. It provides a framework for quantifying individual factors affecting a KPI, such as "pricing pressure in market A", "change in sales channel mix", "increased seniority of new hires", or "unfavorable changes in FX rates". 
 
-See @sec-introduction for more.
+It is also known as: "variance analysis", "sales/margin bridges", and several other names. It is a staple in management accounting, finance, and consulting, though is less known among data analysts (and data scientists).
+
+### What's in the book?
+
+This book aims to be an exhaustive guide to PVM analysis. It covers everything from basics to advanced topics (e.g., PVM extensions to FX analysis or gross margin decomposition). 
+
+A good PVM analysis is 20% about maths and 80% about adopting an approach depending on data at hand and domain-specific knowledge. This book aims to provide solid conceptual foundations but focuses on practical applications and real-world issues one may encounter.
+
+### Whom is it for?
+
+Knowing how to use PVM analysis effectively is invaluable for anyone who works with financial data - from an accountant to a data scientist. This book does not assume prior knowledge about PVM and starts from the beginning, yet it also covers advanced topics. You'll hopefully find this book useful even if you are an experienced accounting and finance professional.
+
+### Accompanying Python package
+
+A `pvm` python package accompanies the book. No one should run serious PVM analysis in custom Excel workbooks in the 21st century. Even using other tools (Alteryx, BI tools or pure SQL) can get hairy when analyses get complex enough. 
+
+I've created the `pvm` package to support typical PVM analysis needs so analysts can focus on tailoring the analysis to the situation instead of worrying about deriving exact formulas.
+
+### About me
+
+I was a financial due diligence professional for 10+ years, analyzing companies' performance and providing valuation and M&A advice to investors. PVM was my favorite tool to understand how a company is doing and get beyond fluffy management statements. 
+
+I also led efforts to standardize how PVM analysis is performed in one of the Big 4 consulting companies globally and built out template accelerators. As a result, I am very familiar with the fact that there is no commonly agreed standard for PVM terminology and considerable variation in how the maths are applied. I touch on that in the book - though I also remain opinionated.
+
