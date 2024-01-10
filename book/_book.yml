@@ -7,6 +7,7 @@ book:
     - part: "Price volume basics"
       chapters:
         - part1/what_is_pvm_and_how_to_use_it.qmd
+        - part1/basic_calcs.qmd
         - part1/intro_to_package.qmd
         - part1/understanding_mix_effects.qmd
         - part1/selecting_granularity.qmd

@@ -2,29 +2,40 @@
 
 Price-volume-mix analysis (also known as: "variance analysis", "sales/margin bridges", and a bunch of other names) is a financial analysis technique used to quantify factors contributing to a company's financial performance (revenue, profitability, and beyond). While it's a staple in management accounting, finance, and consulting, this technique is less known among data analysts (and data scientists) - it's not something taught in a usual data science/analytics degree, nor it's something covered in that mandatory "Accounting 101" class. 
 
-That's a shame, as few other tools help tell a succinct story about KPIs of interest that are affected by rate vs. quantity dynamics, as well as the PVM technique can. It is an excellent tool to answer questions such as:
+That's a shame - analytics teams often encounter situations where they need to "explain a change" in a metric simultaneously affected by several components. PVM analysis is an excellent tool for that. It's also behind fancy waterfall charts you may see in consulting reports like this one:
 
-* How much of last year's revenue decline is attributable to FX rate differences? 
-* How much is the labor cost increase due to salaries vs. additional headcount?
-* How much of the average price decline is due to changing product composition? And how much was due to the change in the sales channel mix?
-* How much of last year's gross margin increase can be attributed to production yield improvements in a manufacturing business?
-* How much did individual regions contribute to a 10ppt overall SaaS business retention rate decline?
+![Source: Vendavo, A Practical Guide to PVM Analysis Insights](../images/fancy-waterfall-example.png)
+
+An analyst could use the PVM framework to answer any of the following questions:
+
+* __In a product-centric business__: How much did the price pressure contribute to the decline in profitability vs. budget? How much of the overall profitability decline is attributable to pricing pressure in specific markets/product lines? How much of the average price decline is due to changing product composition?
+* __In a manufacturing-heavy business__: How much of last year's gross margin increase is attributable to production yield improvements? What was the impact of higher labor costs, and have productivity improvements offset salary increases?
+* __In a B2C subscription-driven business:__ How much did each market contribute to the overall increase in retention? How much of the annual recurring revenue (ARR) increase was due to pricing changes vs. existing customer portfolio expansion (upsell) vs. new customer acquisition? What was the impact of the fluctuation in FX rates?
+
+In other words, it's all about isolating price (or cost) vs. volume impact on a metric that depends on both. In industries where pricing, unit costs, and product selection are key (retail, manufacturing), PVM usage is most popular. However, it has use cases in any business that reaches a certain level of complexity and where there are competing "rate" vs. "quantity" dynamics: 
+
+* In a telecom operator (or any subscription business), that's users vs. their average spend; 
+* In a consulting shop, that's # of hours billed vs. hourly rate (vs. labor cost); 
+* In any global company, that's earnings in the local currency vs. average FX rate ("constant currency" analysis is just a version of PVM). 
+
+With PVM, it's easy to slice & dice the numbers, uncovering over/underperforming business segments while ensuring that you still know their importance in the grand scheme. I am not a fan of "root cause analysis" as a phrase in a business analytics setting (root causes are, typically, bad decisions and not what you find in data), but price-volume-mix analysis is one of the best tools to diagnose issues in company revenue / gross profit performance in a way that leads to actionable insights.
+
+## Some history of PVM
+
+::: {#fig-elephants layout-ncol=2}
+
+![](../images/kirkby-step-through.png){.lightbox}
+
+![](../images/kirkby-1970.png){.lightbox}
+
+Variance Analysis: The 'Step-Through' Method by F.M. Kirkby (1970)
+:::
 
 
-# What is Price Volume Mix analysis?
 
-If you ask a data analyst or data scientist about price-volume-mix analysis (also known as: "variance analysis", "sales/margin bridges" and a bunch of other names), you'll likely get a blank stare. It's not something that's taught in analytics curriculum, despite being a standard approach to analyze trends in data in finance and accounting teams (and likely shows up in MBA curriculums). I think that's kind of a shame - analytics teams often encounter situations where they need to "explain a change" in a metric that's simultaneously affected by number of components, and PVM analysis is a great tool for that. It's also behind fancy waterfall charts you may see in consulting reports like this one:
+Price-volume-mix analysis has been around at least since the 1960s - according to [Google Scholar](https://scholar.google.com/scholar?start=10&q=related:wW7GAm0M8tYJ:scholar.google.com/&hl=en&as_sdt=0,7&scioq=price+volume+mix), there were multiple papers published covering the topic in that decade that touched on the subject. That was the early days of management accounting when scholars developed the concepts of management control and variance analysis and proposed various forms of PVM-like frameworks [see @scapens1984management for a discussion]. These were the days of a manufacturing-centric industry, and such variance analysis discussions often focused on questions not only of the "explain why margins were lower than budgeted" nature but also on selecting optimal product mix and most appropriate costing approaches. 
 
-![image.png](attachment:image.png)
+These discussions led to the eventual rise of operations research (OR) and linear programming applications (optimizing production mix) and gave basis to various costing approaches - full-absorption, activity-based costing, etc. In other words, PVM is as old as management accounting is!
 
-It's a Swiss-army-knife analytical tool to answer questions such as:
-* (A multi-national FMCG) How much is price pressure comtributing to the profitability decline vs. budget?
-* (Any labor intensive business) How much of the labour cost increase in 2023 is due to salaries vs. additional headcount?
-* (A retailer) How much of the average price decline is due to changing product composition?
-* (Manufacturing) How much of the gross margin increase last year can be attributed to production yield improvements?
-* (A B2C SaaS) What were the key drivers behind retention rate decline in Q3?
 
-In other words, it's all about isolating price (or cost) vs. volume impact on a metric that depends on both of them. While mostly employed in industries where pricing, unit costs and product selection is key (retail, manufacturing), there are use cases in any business that reaches a certain level of complexity and where there are competing "rate" vs. "quantity" dynamics. In a telecom operator (or any subscription business) that's users vs. their average spend, in a consulting business that's # of hours billed vs. hourly rate (vs. labor cost), in any global company it's earnings in their local currency vs. average FX rate ("constant currency" analysis is just a version of PVM). 
-
-In other words, it's super useful. However, glance at resources on the web and you will likely see different formulas, get confused by what exactly "Mix effect" is and struggle to get beyond the basics. I spent 10+ years working in EY's Transaction Advisory (a.k.a. "Strategy and Transactions" today) analysing financial performance of companies and PVM was a frequent tool of choice. But even within EY, we had varying methodologies, terminologies, and other -logies; I happen to be the person who led a development of an internal "handbook for PVM analysis" that tried to provide some common ground for unifying approaches used across the firm, so I dare say I know a few things about the topic. I figured that it may be worth to write (a few) blog posts about it. Besides, I have been scarred by doing PVM analysis in monster Excel workbooks, nasty Alteryx workflows (and even nastier PowerBI implementations), and I wanted to see if I could write up a small Python package as I go along.
 

@@ -8,7 +8,7 @@ It is also known as: "variance analysis", "sales/margin bridges", and several ot
 
 ### What's in the book?
 
-This book aims to be an exhaustive guide to PVM analysis. It covers everything from basics to advanced topics (e.g., PVM extensions to FX analysis or gross margin decomposition). 
+Finding 101-level resources on PMV is easy. However, once you glance at a few, you will likely see different formulas, get confused by what exactly "mix effect" is, and struggle to get beyond the basics. This book aims to be an exhaustive guide to PVM analysis. It covers everything from basics to advanced topics (e.g., PVM extensions to FX analysis or gross margin decomposition).
 
 A good PVM analysis is 20% about maths and 80% about adopting an approach depending on data at hand and domain-specific knowledge. This book aims to provide solid conceptual foundations but focuses on practical applications and real-world issues one may encounter.
 
@@ -18,13 +18,13 @@ Knowing how to use PVM analysis effectively is invaluable for anyone who works w
 
 ### Accompanying Python package
 
-A `pvm` python package accompanies the book. No one should run serious PVM analysis in custom Excel workbooks in the 21st century. Even using other tools (Alteryx, BI tools or pure SQL) can get hairy when analyses get complex enough. 
+A `pvm` python package accompanies the book. No one should run serious PVM analysis in custom Excel workbooks in the 21st century. Even using other tools (Alteryx, BI tools, or pure SQL) can get hairy when analyses get complex enough. 
 
-I've created the `pvm` package to support typical PVM analysis needs so analysts can focus on tailoring the analysis to the situation instead of worrying about deriving exact formulas.
+I've created the `pvm` package to support typical PVM analysis needs so analysts can focus on tailoring the analysis to the situation instead of worrying about deriving exact formulas. It uses `polars` for calculations and `altair` for visualizations.
 
 ### About me
 
 I was a financial due diligence professional for 10+ years, analyzing companies' performance and providing valuation and M&A advice to investors. PVM was my favorite tool to understand how a company is doing and get beyond fluffy management statements. 
 
-I also led efforts to standardize how PVM analysis is performed in one of the Big 4 consulting companies globally and built out template accelerators. As a result, I am very familiar with the fact that there is no commonly agreed standard for PVM terminology and considerable variation in how the maths are applied. I touch on that in the book - though I also remain opinionated.
+I also happen to be a person who led efforts to standardize how PVM analysis is performed in one of the Big 4 consulting companies globally, building out template accelerators and a "PVM handbook". I dare say I know a few things about the topic. But also, as a result, I am very familiar with the fact that there is no commonly agreed standard for PVM terminology and considerable variation in how the maths are applied. I touch on that in the book - though I also remain opinionated. 
 
