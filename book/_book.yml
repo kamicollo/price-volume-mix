@@ -31,7 +31,7 @@ book:
     - datasets.qmd
     - summary.qmd
   appendices:
-    - notebooks/intro_to_price_volume_analysis.ipynb    
+    - notebooks/olist_basics.ipynb    
     
   twitter-card: true
   site-url: https://aurimas.eu

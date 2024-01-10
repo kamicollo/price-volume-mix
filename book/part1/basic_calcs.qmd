@@ -1,0 +1,46 @@
+# Basic formulas and intuition
+
+## Olist dataset
+
+Throughout this book, I will be using [a dataset from Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), a Brazilian e-commerce company. Olist works as a platform e-marketplace, connecting businesses with consumers. It's like Etsy or Amazon, except Olist doesn't sell products or hold inventory. The dataset contains actual commercial data (anonymized) down to an order level - precisely the situation where PVM analysis excels. For each order, we know the customer, the seller, and the products, plus price and date information; products roll up into categories, while customers and sellers have associated geographical information.
+
+Here's Olist financial performance on an aggregated level in 2017-2018:
+
+{{< embed ../notebooks/olist_basics.ipynb#grand_totals >}}
+
+::: {.callout-note}
+The notebooks with all the calculations across the book are available in the appendix - if you prefer skimming the code in one place, you can do it there.
+:::
+
+Suppose we wanted to produce a breakdown of the 1.6M revenue increase to say how much was "due to volume" vs. "due to price." It's clear that most of the impact is due to volume - but how can we put a number to it?
+
+## Basic intuition - hold the other factor constant
+
+Well, already long back in the day [see @kirby1970variance], people figured out that the most intuitive way is to calculate the impact for one factor by holding the other factor constant:
+
+* Price impact = [Change in price] * Quantity
+* Quantity impact = [Change in Quantity] * Price
+
+::: {.callout-tip}
+## The single PVM principle
+Indeed - the whole PVM framework is built on this single idea: hold the other factors constant. 
+
+If this feels underwhelming - I am sorry! But if you keep this principle in mind, any PVM extension (constant currency analysis, mix effect decompositions, etc) should become much easier to reason about! It's all about holding the other factors constant.
+:::
+
+There's just one tricky question: which periods do _Quantity_ and _Price_ refer to, exactly?
+
+Suppose we have data from two periods (1 and 2). Then, a change in price is simply $(\text{Price}_2 - \text{Price}_1)$, and change in quantity is $(\text{Quantity}_2 - \text{Quantity}_1)$. Intuitively, it "feels" like they should be multiplied with first-period counterparts, i.e., _Quantity_ is $\text{Quantity}_1$ and _Price_ is $\text{Price}_1$.
+
+Unfortunately, when both prices & quantities change simultaneously, such formulas would not add up to the total change in revenue. That's not good - the whole point of PVM analysis is to decompose a KPI. It needs to add up. 
+
+That leads us to the first point of contention in PVM analyses: formulas and naming conventions. 
+
+I find it easiest to illustrate the exact issue geometrically.
+
+## A Geometric PVM illustration 
+We can think of revenue as represented by a rectangle's area, with price/quantity representing the two axes.
+ 
+!["Geometric PVM illustration"](../images/geometric-pvm-illustration.png)
+
+So what do we do with that pesky $(\text{Price}_2 - \text{Price}_1) * (\text{Quantity}_2 - \text{Quantity}_1)$ component? There are several approaches. One of them is completely wrong: to call it a mix effect. Unfortunately, it's not uncommon to see exactly that. It has nothing to do with true mix effect (that we'll get to eventually). Never do that. As for "valid alternatives":
