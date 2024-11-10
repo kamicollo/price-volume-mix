@@ -2,7 +2,6 @@ import polars as pl
 from .fields import TotalField, RateField, QuantityField, OtherField
 from typing import Union, List
 from enum import Enum
-import itertools as itt
 import polars.selectors as cs
 
 
@@ -149,11 +148,9 @@ class PVM:
                 self.add_change_col(vol_col.name)
                 self.setup_effect_calculations(f, vol_col=vol_col, rate_col=rate_col)
 
-    def pre_aggregate(
-        self, grouping_hierarchy: List
-    ) -> Union[pl.DataFrame, pl.LazyFrame]:
+    def pre_aggregate(self, hierarchy: List) -> Union[pl.DataFrame, pl.LazyFrame]:
         # first, we pre-aggregate data to the level of calculation unit
-        group_by_columns = [self.period_col] + grouping_hierarchy
+        group_by_columns = [self.period_col] + hierarchy
 
         return (
             self.data.group_by(group_by_columns)
@@ -162,52 +159,61 @@ class PVM:
         )
 
     def join_periods(
-        self, agg_data: Union[pl.DataFrame, pl.LazyFrame], grouping_hierarchy: List
+        self, agg_data: Union[pl.DataFrame, pl.LazyFrame], hierarchy: List
     ):
+        # get dtype of the period column
+        period_col_dtype = agg_data.select(self.period_col).to_series().dtype
         # get all periods except the last one
         all_but_last_period = agg_data.filter(
             pl.col(self.period_col) != self.sorted_periods[-1]
         ).with_columns(
             pl.col(self.period_col)
-            .map_dict(self.next_periods)
-            .alias(self.period_col + "_next")
+            .map_dict(self.next_periods, return_dtype=period_col_dtype)
+            .alias("_period_join_key")
         )
 
         # get all periods except the first one
         all_but_first_period = agg_data.filter(
             pl.col(self.period_col) != self.sorted_periods[0]
-        )
+        ).rename({self.period_col: "_period_join_key"})
 
         # do an outer join of the two dfs
         paired_periods = (
             all_but_last_period.join(
                 all_but_first_period,
-                left_on=[self.period_col + "_next"] + grouping_hierarchy,
-                right_on=[self.period_col] + grouping_hierarchy,
-                how="outer",
+                on=["_period_join_key"] + hierarchy,
+                how="outer_coalesce",
                 suffix="_next",
             )
             # remap "next period" columns to prior period to avoid nulls
             .with_columns(
-                pl.col(self.period_col + "_next")
-                .map_dict(self.prev_periods)
-                .alias(self.period_col)
+                pl.col("_period_join_key")
+                .map_dict(self.prev_periods, return_dtype=period_col_dtype)
+                .alias("_prior_period_mapped"),
             )
-            .drop(self.period_col + "_next")
+            .with_columns(
+                pl.when(pl.col(self.period_col).is_null())
+                .then(pl.col("_prior_period_mapped"))
+                .otherwise(pl.col(self.period_col))
+                .alias(self.period_col),
+            )
+            .drop(["_prior_period_mapped", "_period_join_key"])
             # add a like-for-like status (overall)
         ).with_columns(
             pl.when(pl.col(self.field_hierarchy.name).is_null())
-            .then("introduced")
+            .then(pl.lit("introduced"))
             .when(pl.col(self.field_hierarchy.name + "_next").is_null())
-            .then("discontinued")
-            .otherwise("like-for-like")
+            .then(pl.lit("discontinued"))
+            .otherwise(pl.lit("like-for-like"))
             .alias("status"),
             pl.lit("").alias("status_reason"),
         )
 
+        return paired_periods
+
         # identify missing hierarchies by doing incremental joins
-        for i in range(len(grouping_hierarchy)):
-            join_cols = grouping_hierarchy[: i + 1]
+        for i in range(len(hierarchy)):
+            join_cols = hierarchy[: i + 1]
             discontinued = (
                 (
                     all_but_last_period.join(
@@ -315,7 +321,11 @@ class PVM:
         return calculated.group_by("status", "status_reason").agg(
             (
                 (
-                    (cs.contains("revenue") | cs.ends_with("effect"))
+                    (
+                        cs.contains("quantity")
+                        | cs.contains("revenue")
+                        | cs.ends_with("effect")
+                    )
                     & (~cs.contains("calculated"))
                 ).sum()
             ).round(1),

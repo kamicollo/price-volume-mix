@@ -1,5 +1,4 @@
-# Choosing the right level of data detail
+# Choosing the right level of data detail {#sec-granularity}
 
-## How to choose the right level of detail
-
+## How to choose the right level of d
 ## Insufficient data detail available

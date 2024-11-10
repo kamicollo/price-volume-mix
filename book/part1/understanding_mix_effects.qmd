@@ -1,1 +1,141 @@
-# Mix effects
+# Unit of analysis and mix effects {#sec-mix-effects}
+
+So far, we've covered basic PVM formulas, applied them to the aggregated Olist financials, and produced a waterfall chart. It is, of course, not very helpful. You don't need price-volume analysis for that. The real power of PVM comes into play when we start working with more granular data. 
+
+{{< embed ../notebooks/olist_basics.ipynb#basic_waterfall echo=False >}}
+
+## Digging into financial performance by geography
+
+Suppose that our executive team is interested in understanding how different geographical areas are performing and whether any states are under price pressure due to some local competitors.
+
+Before applying PVM, let's do some exploratory data analysis and visualize the % changes in average price, volume, and revenue by state.
+
+{{< embed ../notebooks/olist_basics.ipynb#eda_by_geo echo=False >}}
+
+Performance indeed varies by geography. There are some states where prices have decreased, and we also see that the highest percentage revenue increase is in RR, which I assume represents [Roraima](https://en.wikipedia.org/wiki/Roraima) - Brazil's least populous state in Brazil, which is in the Amazon rainforest and accounts for just 0.2% of Brazil's GDP. That's not an expected place for growth! 
+
+Indeed, if we were to display absolute changes instead, we would see that the percentage changes were deceiving.
+
+{{< embed ../notebooks/olist_basics.ipynb#basic-geo-eda-absolute echo=False >}}
+
+From an absolute perspective, the dominant state is SP (Sao Paolo). But it's hard to assess what is happening with prices - the increase in Roraima is throwing comparisons off.
+
+Let's instead calculate the effects using the PVM framework.
+
+### Price volume calculations
+
+::: {.callout-tip}
+# PVM effects are additive
+
+An essential property of PVM calculations is that they are additive. It means that we can calculate them at any level of granularity we want, and we can be sure they will still add up to the same total.
+:::
+
+Instead of doing it on an aggregate level, we will calculate them for each state. Using `polars`, our code would look like this:
+
+{{< embed ../notebooks/olist_basics.ipynb#pvm-by-state echo=True >}}
+
+We can also aggregate each effect to get totals, observing that they add up to `1558.8k`, the total revenue change.
+
+{{< embed ../notebooks/olist_basics.ipynb#pmv-by-state-totals echo=True >}}
+
+Now, we can create a better chart summarizing what is happening in the business. Here's one way we could do it. 
+
+{{< embed ../notebooks/olist_basics.ipynb#geo-pmv-chart echo=False >}}
+
+It appears that price pressure is only an issue worth attention in Rio de Janeiro (RJ), where the average price decline has contributed to a nearly 45M revenue decline. However, it has compensated with volume growth nevertheless (+76.6M). That's good news for the executive team!
+
+## Mix effects
+
+### Calculating mix effects
+
+Readers with a sharp eye may have noticed that I glanced over something in the above analysis. While it is true that effects still add up to the total revenue change, the total price and volume effect is no longer the same as what we obtained when we calculated PVM effects on an aggregated level. The previous analysis estimated price effect at `25k` and volume effect at `1.533M`, but now we have `123k` and `1436k`. 
+
+{{< embed ../notebooks/olist_basics.ipynb#basic-pvm-calculation-side-by-side echo=False >}}
+
+Which one is right?
+
+Well, it's both of them. In either of the scenarios, we are working with average prices. Average prices are affected by pricing and volume mix changes (remember the example from the previous chapter of a business selling TVs and socks?). When we individually calculate effects on a state level, the price effects we obtain are no longer affected by changes in how much (proportionally) revenue each state accounts for. However, if we calculate effects on an aggregated level, the mix of revenue share in each state is embedded in the average prices we work with. 
+
+Mathematically:
+
+$$
+\text{Price effect}_{\text{state level}} = \text{Price effect}_{\text{aggregated level}} - \text{Mix effect}_{\text{state volume}}
+$$
+$$
+\text{Quantity effect}_{\text{state level}} = \text{Quantity effect}_{\text{aggregated level}} + \text{Mix effect}_{\text{state volume}}
+$$
+
+Thus, in Olist's case, the state volume mix effect is negative ($25k - 123k = -98k$). 
+
+::: {.callout-note}
+# What is the business translation of a "negative mix effect"? 
+
+A negative mix effect implies a shift in the distribution of sales volume that has negatively impacted our revenue. It helps to reason about it in counterfactuals - a negative mix effect means that, had the distribution of sales volume not changed, we would have had higher revenue. That suggests that we must have increased the share of sales in regions that are not as valuable - i.e., the regions where prices are lower than average.
+
+In other words, the volume in low-priced states must have increased more (or decreased less) than in high-priced states. Let's see if we can confirm that visually. 
+
+{{< embed ../notebooks/olist_basics.ipynb#price-vs-volume-scatter echo=False >}}
+
+From the above chart, it's pretty clear why the mix effect is negative. We see a near-perfectly linear relationship between change in volume and average price in the state. Something the executive team may want to understand more deeply!
+:::
+
+### Unit of analysis vs. mix effects
+
+Above, we inferred the mix effect of the changes in the volume distribution between Brazil's states. However, that's just one of the data dimensions we have access to. Instead of analyzing aggregated volume/price information on a state level, we could break it down by seller, product category, or individual product or customer. Every one of these calculations would yield a different result:
+
+{{< embed ../notebooks/olist_basics.ipynb#results-by-different-granularity echo=False >}}
+
+Not only are the results different, but the price effects are opposite! The Olist dataset is quite an extreme illustration of the most critical choice in PVM analysis: **the unit of analysis**. 
+
+That choice determines which mix effects are captured in the volume bucket and which affect the price calculations. Choosing a unit of analysis you can stand by (and understanding its limitations) is very important when working with PVM analysis. [Chapter @sec-granularity] details how to go about it and discusses some common scenarios.
+
+Now, back to Olist: while it may seem like an issue that price effects are all over the place, it's actually the opposite. The differences in results give us insights into what could be happening in the business. Here's how we could interpret it:
+
+ * The fact that the price effect switches to negative -128.4k when we include product category tells us that there is, in fact, quite a bit of price pressure in individual product categories. However, this effect is obscured by an overall shift towards higher-priced categories.
+ * Similarly, on a seller-by-seller basis, average prices have declined. However, in the grand scheme of things, sellers with higher average prices are gaining market share, or new sellers entering the marketplace tend to focus on higher-price items.
+ * If we consider individual products, we see that their prices have declined, too. Similar to product categories and sellers, it implies a mix effect that offsets it on an aggregated level.  
+ * Finally, the price effect on a customer level is exactly zero. It turns out that in this dataset, no single customer made purchases across both years. Including customer dimension into PVM would be meaningless - an excellent example of why you should be thoughtful about the choice. 
+
+::: {.callout-warning}
+# PVM analysis and limited access to data
+
+Sometimes, you don't have access to the level of data detail you may want, and you cannot choose the desired unit of analysis. Be careful with compromising and working with aggregated data instead. It is easy to get into a "garbage in, garbage out" situation and get results that will be unhelpful or, worse, misleading.
+
+:::
+
+### Breaking down and visualizing mix effects
+
+Above, we saw that PVM calculations on a seller level lead to a `-150.8k` price effect vs. `25.2k` effect when calculated on an aggregated level, implying a positive seller mix effect of `25.2k - (-150.8k) = 176.0k`. But can we further understand if sellers with higher average prices are gaining market share, or are marketplace entries and exits driving the mix? Let's have a look:
+
+{{< embed ../notebooks/olist_basics.ipynb#seller_summary echo=False >}}
+
+We can see that the average prices among existing sellers are ~20% lower than among new ones and those who exited the marketplace. Additionally, new sellers contributed ~3.5x revenue in 2018 vs. what the ones who left the marketplace contributed in 2017. Combined, these two factors contribute to the overall seller mix. But how much? 
+
+To break down the seller mix effect, we could calculate price effects on overall average prices, but only among existing sellers. We'd effectively capture seller mix in the price effect but only the portion associated with existing sellers. Using data from the above table:
+
+First, we calculate the price effect using aggregate data, but among existing sellers only: 
+$$(P_2 - P_1) * Q_2 = (131.8 - 137.6) * 44.8 = -256.3k$$
+
+Using above, we get the seller mix effect among existing sellers only: 
+$$\text{Price effect}_{\text{aggregated}} - \text{Price effect}_{\text{seller by seller}} = -256.3k + 150.8k = -105.8k$$
+
+Then, we compare what we estimated with the total seller mix effect to obtain the remaining mix effect due to new/previous sellers:
+$$\text{Mix effect}_{\text{total}} - \text{Mix effect}_{\text{existing sellers}} = 176k - (-105.8k) = 281.5k$$
+
+Finally, it helps to put it all together in a single chart:
+
+
+
+### Choosing a hierarchy
+
+Above, we considered calculations with one dimension at a time. There is nothing that prevents us from slicing the data by multiple dimensions. *In fact, that is what you want to do*. 
+
+We could also visualize mix effects. Here's how it could look (excluding customer dimension).
+
+
+
+
+
+
+
+
